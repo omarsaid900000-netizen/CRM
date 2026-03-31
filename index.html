@@ -1,0 +1,1362 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CRM — إدارة علاقات العملاء B2B</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Segoe UI',Tahoma,Arial,sans-serif;background:#F0F4F8;direction:rtl;color:#1a1a2e;font-size:14px;}
+:root{
+  --primary:#0F4C81;--accent:#E8A020;--success:#1D9E75;--danger:#D85A30;
+  --warn:#BA7517;--purple:#534AB7;--surface:#fff;--border:rgba(0,0,0,0.1);--muted:#6B7280;
+}
+ 
+/* ── HEADER (identical to KPI) ── */
+.header{background:var(--primary);color:#fff;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:4px solid var(--accent);position:sticky;top:0;z-index:200;}
+.logo{display:flex;align-items:center;gap:10px;}
+.logo-icon{width:38px;height:38px;background:var(--accent);border-radius:9px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;color:#fff;}
+.logo-text{font-size:15px;font-weight:700;}
+.logo-sub{font-size:10px;opacity:.7;margin-top:1px;}
+.header-actions{display:flex;align-items:center;gap:8px;}
+.hbtn{background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);color:#fff;padding:6px 14px;border-radius:7px;font-size:12px;cursor:pointer;font-family:inherit;transition:all .15s;}
+.hbtn:hover,.hbtn.active{background:var(--accent);border-color:var(--accent);}
+ 
+/* ── NAV (identical to KPI) ── */
+.nav{background:var(--surface);border-bottom:1px solid var(--border);display:flex;padding:0 20px;overflow-x:auto;}
+.nav-item{padding:11px 15px;font-size:13px;color:var(--muted);cursor:pointer;border-bottom:3px solid transparent;transition:all .2s;white-space:nowrap;}
+.nav-item.active{color:var(--primary);border-bottom-color:var(--primary);font-weight:700;}
+.nav-item:hover{color:var(--primary);}
+ 
+/* ── CONTENT ── */
+.content{padding:18px 20px;max-width:1300px;margin:0 auto;}
+.section-title{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;margin-bottom:11px;}
+ 
+/* ── GRID LAYOUTS ── */
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;margin-bottom:18px;}
+@media(max-width:900px){.kpi-grid{grid-template-columns:repeat(2,1fr);}}
+.two-col{display:grid;grid-template-columns:2fr 1fr;gap:14px;}
+.equal-col{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
+@media(max-width:800px){.two-col,.equal-col,.three-col{grid-template-columns:1fr;}}
+ 
+/* ── CARDS (identical to KPI) ── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:15px;margin-bottom:14px;}
+.card-title{font-size:13px;font-weight:700;color:#1a1a2e;margin-bottom:13px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;}
+ 
+/* ── BADGES (identical to KPI) ── */
+.badge{background:#EEF2FF;color:var(--purple);font-size:10px;padding:3px 9px;border-radius:20px;font-weight:700;}
+.badge-green{background:#E1F5EE;color:#0F6E56;}
+.badge-red{background:#FCEBEB;color:#A32D2D;}
+.badge-amber{background:#FEF3E2;color:var(--warn);}
+.badge-blue{background:#E8F4FD;color:#0a3a65;}
+.badge-gray{background:#f3f4f6;color:#555;}
+ 
+/* ── KPI SUMMARY CARDS (identical to KPI platform) ── */
+.kpi-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px;position:relative;overflow:hidden;transition:box-shadow .2s;}
+.kpi-card:hover{box-shadow:0 4px 16px rgba(0,0,0,.08);}
+.kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:var(--cc,var(--primary));}
+.kpi-label{font-size:11px;color:var(--muted);margin-bottom:5px;}
+.kpi-value{font-size:22px;font-weight:800;color:#1a1a2e;margin-bottom:3px;}
+.kpi-sub{font-size:10px;color:#aaa;margin-top:3px;}
+.up{color:var(--success);font-size:11px;font-weight:600;}
+.down{color:var(--danger);font-size:11px;font-weight:600;}
+ 
+/* ── AVATAR (identical to KPI) ── */
+.avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff;flex-shrink:0;}
+.avatar-lg{width:44px;height:44px;font-size:15px;}
+ 
+/* ── DATA TABLE (identical to KPI) ── */
+.data-table{width:100%;border-collapse:collapse;}
+.data-table th{font-size:11px;font-weight:700;color:var(--muted);padding:8px 10px;border-bottom:2px solid var(--border);text-align:center;white-space:nowrap;}
+.data-table th:first-child{text-align:right;}
+.data-table td{font-size:12px;padding:9px 10px;border-bottom:1px solid var(--border);text-align:center;vertical-align:middle;}
+.data-table td:first-child{text-align:right;}
+.data-table tr:last-child td{border-bottom:none;}
+.data-table tr:hover td{background:#f8f9fc;}
+ 
+/* ── HINT BOXES (identical to KPI) ── */
+.hint{border-radius:9px;padding:10px 14px;font-size:12px;margin-bottom:14px;line-height:1.8;}
+.hint-blue{background:#E8F4FD;border:1px solid #90CAF9;color:#0a3a65;}
+.hint-amber{background:#FEF3E2;border:1px solid #E8A020;color:#7a4f00;}
+.hint-green{background:#E1F5EE;border:1px solid #9FE1CB;color:#0F6E56;}
+ 
+/* ── TOAST (identical to KPI) ── */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:#1a1a2e;color:#fff;padding:10px 22px;border-radius:30px;font-size:13px;font-weight:700;z-index:9999;transition:transform .3s ease;pointer-events:none;border-right:4px solid var(--accent);}
+.toast.show{transform:translateX(-50%) translateY(0);}
+ 
+/* ── FIELD INPUTS (identical to KPI) ── */
+.field-input{padding:7px 10px;border:1px solid var(--border);border-radius:7px;font-size:12px;font-family:inherit;background:#fff;color:#1a1a2e;width:100%;}
+.field-input:focus{outline:none;border-color:var(--primary);}
+select.field-input{cursor:pointer;background:#f8f9fc;}
+.save-btn{background:var(--primary);border:none;color:#fff;padding:9px 22px;border-radius:8px;font-size:13px;font-family:inherit;font-weight:700;cursor:pointer;}
+.save-btn:hover{background:#0a3a65;}
+.save-btn.accent{background:var(--accent);color:#fff;}
+.save-btn.danger{background:var(--danger);}
+.save-btn.success{background:var(--success);}
+ 
+/* ── TAB CONTENT ── */
+.tab-content{display:none;}
+.tab-content.active{display:block;}
+ 
+/* ══════════════════ CRM-SPECIFIC STYLES ══════════════════ */
+ 
+/* ── SEARCH & FILTER BAR ── */
+.filter-bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:14px;}
+.search-input{flex:1;min-width:200px;padding:8px 12px 8px 36px;border:1px solid var(--border);border-radius:8px;font-size:13px;font-family:inherit;background:#fff;color:#1a1a2e;position:relative;}
+.search-wrap{position:relative;flex:1;min-width:200px;}
+.search-wrap::before{content:'🔍';position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:13px;pointer-events:none;}
+.search-wrap input{width:100%;padding:8px 32px 8px 12px;border:1px solid var(--border);border-radius:8px;font-size:13px;font-family:inherit;background:#fff;color:#1a1a2e;}
+.search-wrap input:focus{outline:none;border-color:var(--primary);}
+.filter-select{padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-size:12px;font-family:inherit;background:#f3f4f6;color:#444;cursor:pointer;}
+.filter-select:focus{outline:none;border-color:var(--primary);}
+.add-record-btn{background:var(--primary);border:none;color:#fff;padding:8px 16px;border-radius:8px;font-size:13px;font-family:inherit;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;white-space:nowrap;}
+.add-record-btn:hover{background:#0a3a65;}
+ 
+/* ── COMPANY CARD (list view) ── */
+.company-row{display:flex;align-items:center;gap:12px;padding:11px 12px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s;}
+.company-row:last-child{border-bottom:none;}
+.company-row:hover{background:#f8f9fc;}
+.company-logo{width:38px;height:38px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#fff;flex-shrink:0;}
+.company-info{flex:1;min-width:0;}
+.company-name{font-size:13px;font-weight:700;color:#1a1a2e;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.company-meta{font-size:11px;color:var(--muted);margin-top:1px;}
+.company-stats{display:flex;gap:14px;flex-shrink:0;}
+.cstat{text-align:center;}
+.cstat-val{font-size:13px;font-weight:800;color:#1a1a2e;}
+.cstat-lbl{font-size:9px;color:var(--muted);}
+ 
+/* ── STAGE PILL ── */
+.stage-pill{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;}
+.stage-lead{background:#E8F4FD;color:#0a3a65;}
+.stage-qualified{background:#EEF2FF;color:#3C3489;}
+.stage-proposal{background:#FEF3E2;color:#7a4f00;}
+.stage-negotiation{background:#FCEBEB;color:#A32D2D;}
+.stage-won{background:#E1F5EE;color:#0F6E56;}
+.stage-lost{background:#f3f4f6;color:#555;}
+.stage-customer{background:#E1F5EE;color:#0F6E56;}
+.stage-inactive{background:#f3f4f6;color:#888;}
+ 
+/* ── PRIORITY DOT ── */
+.prio-dot{width:8px;height:8px;border-radius:50%;display:inline-block;flex-shrink:0;}
+.prio-high{background:var(--danger);}
+.prio-med{background:var(--warn);}
+.prio-low{background:#888;}
+ 
+/* ── DEAL CARD (kanban) ── */
+.kanban-board{display:flex;gap:12px;overflow-x:auto;padding-bottom:8px;}
+.kanban-col{flex:0 0 220px;background:#f3f4f6;border-radius:12px;padding:10px;}
+.kanban-col-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.kanban-col-title{font-size:12px;font-weight:700;color:#1a1a2e;}
+.kanban-count{font-size:11px;font-weight:700;color:#fff;background:var(--muted);border-radius:20px;padding:1px 7px;}
+.kanban-card{background:#fff;border:1px solid var(--border);border-radius:10px;padding:11px;margin-bottom:8px;cursor:pointer;transition:box-shadow .15s;}
+.kanban-card:hover{box-shadow:0 3px 12px rgba(0,0,0,.1);}
+.kanban-card-title{font-size:12px;font-weight:700;color:#1a1a2e;margin-bottom:5px;}
+.kanban-card-company{font-size:11px;color:var(--muted);margin-bottom:7px;}
+.kanban-card-footer{display:flex;align-items:center;justify-content:space-between;}
+.deal-value{font-size:12px;font-weight:800;color:var(--primary);}
+.deal-days{font-size:10px;color:var(--muted);}
+ 
+/* ── PIPELINE PROGRESS ── */
+.pipe-bar-bg{height:8px;background:#f0f0f0;border-radius:4px;overflow:hidden;margin-top:3px;}
+.pipe-bar-fill{height:100%;border-radius:4px;}
+ 
+/* ── CONTACT CARD ── */
+.contact-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);}
+.contact-row:last-child{border-bottom:none;}
+.contact-info{flex:1;}
+.contact-name{font-size:13px;font-weight:700;}
+.contact-title{font-size:11px;color:var(--muted);}
+.contact-company{font-size:11px;color:var(--primary);font-weight:600;}
+ 
+/* ── ACTIVITY TIMELINE ── */
+.timeline-item{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);position:relative;}
+.timeline-item:last-child{border-bottom:none;}
+.timeline-icon{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;border:2px solid #fff;box-shadow:0 0 0 1px var(--border);}
+.timeline-body{flex:1;}
+.timeline-title{font-size:12px;font-weight:700;color:#1a1a2e;}
+.timeline-meta{font-size:11px;color:var(--muted);margin-top:2px;}
+.timeline-note{font-size:12px;color:#444;margin-top:5px;background:#f8f9fc;padding:6px 10px;border-radius:7px;border-right:3px solid var(--border);}
+ 
+/* ── MODAL OVERLAY ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(15,30,60,0.5);z-index:500;display:flex;align-items:center;justify-content:center;padding:20px;}
+.modal-overlay.hidden{display:none;}
+.modal{background:#fff;border-radius:16px;padding:22px;width:100%;max-width:600px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.2);}
+.modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
+.modal-title{font-size:15px;font-weight:800;color:#1a1a2e;}
+.modal-close{background:#f3f4f6;border:none;width:30px;height:30px;border-radius:8px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;}
+.modal-close:hover{background:#e0e0e0;}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+@media(max-width:500px){.form-grid{grid-template-columns:1fr;}}
+.form-group{display:flex;flex-direction:column;gap:4px;}
+.form-group.full{grid-column:1/-1;}
+.form-label{font-size:11px;font-weight:700;color:var(--muted);}
+.form-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:18px;padding-top:14px;border-top:1px solid var(--border);}
+ 
+/* ── PROFILE PANEL ── */
+.profile-header{display:flex;align-items:flex-start;gap:14px;padding:16px;background:linear-gradient(135deg,#EEF2FF 0%,#E8F4FD 100%);border-radius:12px;margin-bottom:14px;border:1px solid rgba(15,76,129,0.1);}
+.profile-body{flex:1;}
+.profile-name{font-size:17px;font-weight:800;color:#1a1a2e;}
+.profile-subtitle{font-size:12px;color:var(--muted);margin-top:2px;}
+.profile-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+@media(max-width:600px){.info-grid{grid-template-columns:1fr;}}
+.info-item{background:#f8f9fc;border-radius:9px;padding:10px 12px;}
+.info-label{font-size:10px;font-weight:700;color:var(--muted);margin-bottom:3px;}
+.info-value{font-size:13px;font-weight:700;color:#1a1a2e;}
+ 
+/* ── SCORE METER ── */
+.score-meter{display:flex;align-items:center;gap:10px;}
+.score-track{flex:1;height:8px;background:#f0f0f0;border-radius:4px;overflow:hidden;}
+.score-fill{height:100%;border-radius:4px;transition:width .5s;}
+.score-label{font-size:12px;font-weight:800;min-width:36px;text-align:left;}
+ 
+/* ── MINI STATS ROW ── */
+.mini-stats{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;}
+.mini-stat-card{flex:1;min-width:100px;background:#f8f9fc;border-radius:10px;padding:10px;text-align:center;border:1px solid var(--border);}
+.mini-stat-val{font-size:18px;font-weight:800;}
+.mini-stat-lbl{font-size:10px;color:var(--muted);margin-top:2px;}
+ 
+/* ── TASKS ── */
+.task-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);}
+.task-row:last-child{border-bottom:none;}
+.task-check{width:18px;height:18px;border-radius:5px;border:2px solid var(--border);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;transition:all .15s;}
+.task-check.done{background:var(--success);border-color:var(--success);color:#fff;}
+.task-text{flex:1;font-size:12px;}
+.task-text.done-text{text-decoration:line-through;color:var(--muted);}
+.task-due{font-size:10px;padding:2px 7px;border-radius:10px;font-weight:700;}
+.task-overdue{background:#FCEBEB;color:#A32D2D;}
+.task-today{background:#FEF3E2;color:var(--warn);}
+.task-upcoming{background:#E1F5EE;color:#0F6E56;}
+ 
+/* ── BACK BUTTON ── */
+.back-btn{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--primary);cursor:pointer;font-weight:700;padding:6px 12px;background:#EEF2FF;border-radius:7px;margin-bottom:14px;border:none;font-family:inherit;}
+.back-btn:hover{background:#d8deff;}
+ 
+/* ── STAGE SELECTOR INLINE ── */
+.stage-btns{display:flex;gap:6px;flex-wrap:wrap;}
+.stage-btn{padding:5px 12px;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;border:2px solid transparent;transition:all .15s;font-family:inherit;}
+.stage-btn:hover{opacity:.85;}
+.stage-btn.selected{border-color:#1a1a2e;}
+</style>
+</head>
+<body>
+ 
+<div class="toast" id="toast"></div>
+ 
+<!-- MODAL: Add/Edit Company -->
+<div class="modal-overlay hidden" id="company-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-title">إضافة شركة جديدة</div>
+      <button class="modal-close" onclick="closeModal('company-modal')">✕</button>
+    </div>
+    <div class="form-grid" id="company-form"></div>
+    <div class="form-actions">
+      <button class="save-btn" style="background:#f3f4f6;color:#555;border:1px solid var(--border);" onclick="closeModal('company-modal')">إلغاء</button>
+      <button class="save-btn" onclick="saveCompanyForm()">💾 حفظ</button>
+    </div>
+  </div>
+</div>
+ 
+<!-- MODAL: Add Activity -->
+<div class="modal-overlay hidden" id="activity-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">إضافة نشاط</div>
+      <button class="modal-close" onclick="closeModal('activity-modal')">✕</button>
+    </div>
+    <div class="form-grid" id="activity-form"></div>
+    <div class="form-actions">
+      <button class="save-btn" style="background:#f3f4f6;color:#555;border:1px solid var(--border);" onclick="closeModal('activity-modal')">إلغاء</button>
+      <button class="save-btn" onclick="saveActivityForm()">💾 حفظ النشاط</button>
+    </div>
+  </div>
+</div>
+ 
+<!-- MODAL: Add Deal -->
+<div class="modal-overlay hidden" id="deal-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="deal-modal-title">إضافة صفقة جديدة</div>
+      <button class="modal-close" onclick="closeModal('deal-modal')">✕</button>
+    </div>
+    <div class="form-grid" id="deal-form"></div>
+    <div class="form-actions">
+      <button class="save-btn" style="background:#f3f4f6;color:#555;border:1px solid var(--border);" onclick="closeModal('deal-modal')">إلغاء</button>
+      <button class="save-btn" onclick="saveDealForm()">💾 حفظ الصفقة</button>
+    </div>
+  </div>
+</div>
+ 
+<!-- MODAL: Add Contact -->
+<div class="modal-overlay hidden" id="contact-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="contact-modal-title">إضافة جهة اتصال</div>
+      <button class="modal-close" onclick="closeModal('contact-modal')">✕</button>
+    </div>
+    <div class="form-grid" id="contact-form"></div>
+    <div class="form-actions">
+      <button class="save-btn" style="background:#f3f4f6;color:#555;border:1px solid var(--border);" onclick="closeModal('contact-modal')">إلغاء</button>
+      <button class="save-btn" onclick="saveContactForm()">💾 حفظ</button>
+    </div>
+  </div>
+</div>
+ 
+<!-- HEADER -->
+<div class="header">
+  <div class="logo">
+    <div class="logo-icon">CRM</div>
+    <div>
+      <div class="logo-text">CRM — إدارة علاقات العملاء B2B</div>
+      <div class="logo-sub">مدرسة قادة المبيعات — Sales Leaders School</div>
+    </div>
+  </div>
+  <div class="header-actions">
+    <button class="hbtn" id="kpi-link-btn" onclick="showToast('افتح منصة CRM في تاب منفصل')">📊 منصة CRM</button>
+    <div style="font-size:12px;font-weight:700;color:var(--accent);" id="crm-stats-header">0 شركة · 0 صفقة</div>
+  </div>
+</div>
+ 
+<!-- NAV -->
+<div class="nav">
+  <div class="nav-item active"  onclick="showTab('dashboard',this)">📊 لوحة القيادة</div>
+  <div class="nav-item"         onclick="showTab('companies',this)">🏢 الشركات</div>
+  <div class="nav-item"         onclick="showTab('pipeline',this)">🔽 البايبلاين</div>
+  <div class="nav-item"         onclick="showTab('contacts',this)">👤 جهات الاتصال</div>
+  <div class="nav-item"         onclick="showTab('activities',this)">📅 الأنشطة والمهام</div>
+  <div class="nav-item"         onclick="showTab('reports',this)">📈 التقارير</div>
+</div>
+ 
+<div class="content">
+ 
+  <!-- ══════════════════ DASHBOARD ══════════════════ -->
+  <div class="tab-content active" id="tab-dashboard">
+    <div class="section-title">لوحة القيادة — CRM</div>
+    <div class="kpi-grid" id="crm-kpi-grid"></div>
+    <div class="two-col">
+      <div>
+        <div class="card">
+          <div class="card-title">أحدث الصفقات النشطة <span class="badge" id="active-deals-badge">0 صفقة</span></div>
+          <div id="dash-deals-list"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">المهام المستحقة قريباً <span class="badge badge-amber" id="due-tasks-badge">0 مهمة</span></div>
+          <div id="dash-tasks-list"></div>
+        </div>
+      </div>
+      <div>
+        <div class="card">
+          <div class="card-title">تفاصيل البايبلاين</div>
+          <div id="dash-pipeline-mini"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">آخر الأنشطة</div>
+          <div id="dash-activities-mini"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+ 
+  <!-- ══════════════════ COMPANIES ══════════════════ -->
+  <div class="tab-content" id="tab-companies">
+    <!-- List view -->
+    <div id="companies-list-view">
+      <div class="filter-bar">
+        <div class="search-wrap">
+          <input type="text" placeholder="بحث عن شركة..." id="company-search" oninput="renderCompaniesList()">
+        </div>
+        <select class="filter-select" id="company-stage-filter" onchange="renderCompaniesList()">
+          <option value="">كل المراحل</option>
+          <option value="lead">Lead</option>
+          <option value="qualified">Qualified</option>
+          <option value="proposal">Proposal</option>
+          <option value="negotiation">Negotiation</option>
+          <option value="won">Won / عميل</option>
+          <option value="lost">Lost</option>
+          <option value="customer">عميل حالي</option>
+        </select>
+        <select class="filter-select" id="company-industry-filter" onchange="renderCompaniesList()">
+          <option value="">كل القطاعات</option>
+        </select>
+        <select class="filter-select" id="company-rep-filter" onchange="renderCompaniesList()">
+          <option value="">كل المندوبين</option>
+        </select>
+        <button class="add-record-btn" onclick="openAddCompanyModal()">+ إضافة شركة</button>
+      </div>
+      <div class="card" style="padding:0;">
+        <div style="padding:12px 15px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
+          <span id="companies-count-label" style="font-size:12px;font-weight:700;color:var(--muted);">0 شركة</span>
+          <div style="display:flex;gap:6px;">
+            <select class="filter-select" id="company-sort" onchange="renderCompaniesList()">
+              <option value="name">ترتيب: الاسم</option>
+              <option value="value">ترتيب: القيمة</option>
+              <option value="stage">ترتيب: المرحلة</option>
+              <option value="recent">ترتيب: الأحدث</option>
+            </select>
+          </div>
+        </div>
+        <div id="companies-list-body"></div>
+      </div>
+    </div>
+    <!-- Company profile view (hidden by default) -->
+    <div id="company-profile-view" style="display:none;"></div>
+  </div>
+ 
+  <!-- ══════════════════ PIPELINE ══════════════════ -->
+  <div class="tab-content" id="tab-pipeline">
+    <div class="filter-bar">
+      <div class="search-wrap" style="max-width:300px;">
+        <input type="text" placeholder="بحث في الصفقات..." id="deal-search" oninput="renderPipeline()">
+      </div>
+      <select class="filter-select" id="deal-rep-filter" onchange="renderPipeline()">
+        <option value="">كل المندوبين</option>
+      </select>
+      <button class="add-record-btn" onclick="openAddDealModal()">+ إضافة صفقة</button>
+      <div style="margin-right:auto;font-size:12px;font-weight:700;color:var(--muted);" id="pipeline-total-label"></div>
+    </div>
+    <div id="kanban-board-wrap"></div>
+  </div>
+ 
+  <!-- ══════════════════ CONTACTS ══════════════════ -->
+  <div class="tab-content" id="tab-contacts">
+    <div class="filter-bar">
+      <div class="search-wrap">
+        <input type="text" placeholder="بحث في جهات الاتصال..." id="contact-search" oninput="renderContactsList()">
+      </div>
+      <select class="filter-select" id="contact-company-filter" onchange="renderContactsList()">
+        <option value="">كل الشركات</option>
+      </select>
+      <select class="filter-select" id="contact-role-filter" onchange="renderContactsList()">
+        <option value="">كل المناصب</option>
+        <option value="decision">صانع قرار</option>
+        <option value="influencer">مؤثر</option>
+        <option value="user">مستخدم</option>
+        <option value="champion">Champion</option>
+      </select>
+      <button class="add-record-btn" onclick="openAddContactModal()">+ إضافة جهة اتصال</button>
+    </div>
+    <div class="card" style="padding:0;">
+      <table class="data-table" id="contacts-table">
+        <thead><tr>
+          <th style="text-align:right;">جهة الاتصال</th>
+          <th>المنصب</th>
+          <th>الشركة</th>
+          <th>الدور في القرار</th>
+          <th>المندوب المسؤول</th>
+          <th>آخر تواصل</th>
+          <th>الإجراء</th>
+        </tr></thead>
+        <tbody id="contacts-table-body"></tbody>
+      </table>
+    </div>
+  </div>
+ 
+  <!-- ══════════════════ ACTIVITIES & TASKS ══════════════════ -->
+  <div class="tab-content" id="tab-activities">
+    <div class="equal-col">
+      <div>
+        <div class="card">
+          <div class="card-title">المهام المفتوحة <span class="badge badge-amber" id="open-tasks-count">0</span>
+            <button class="save-btn" style="padding:5px 12px;font-size:12px;" onclick="openAddTaskModal()">+ مهمة</button>
+          </div>
+          <div id="tasks-list"></div>
+        </div>
+      </div>
+      <div>
+        <div class="card">
+          <div class="card-title">سجل الأنشطة الكاملة
+            <button class="save-btn" style="padding:5px 12px;font-size:12px;" onclick="openAddActivityModal()">+ نشاط</button>
+          </div>
+          <div id="activities-full-list"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+ 
+  <!-- ══════════════════ REPORTS ══════════════════ -->
+  <div class="tab-content" id="tab-reports">
+    <div class="section-title">تقارير CRM — مرتبطة بمؤشرات KPI</div>
+    <div class="hint hint-green">
+      📊 <strong>هذه التقارير مبنية على بيانات CRM الحقيقية</strong> — بتتحدث تلقائياً مع كل إضافة أو تعديل في الشركات والصفقات والأنشطة.
+    </div>
+    <div class="kpi-grid" id="report-kpis"></div>
+    <div class="equal-col">
+      <div class="card">
+        <div class="card-title">الشركات حسب المرحلة</div>
+        <div id="report-by-stage"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">أداء المندوبين (من CRM)</div>
+        <div id="report-by-rep"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">توزيع الصفقات حسب القطاع</div>
+      <div id="report-by-industry" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">مؤشرات الربط مع منصة KPI <span class="badge badge-blue">للمقارنة</span></div>
+      <div id="report-kpi-bridge"></div>
+    </div>
+  </div>
+ 
+</div><!-- /content -->
+ 
+<script>
+/* ══════════════════════════════════════════════
+   DATA MODEL
+══════════════════════════════════════════════ */
+const COLORS = ['#0F4C81','#1D9E75','#E8A020','#534AB7','#D85A30','#185FA5','#BA7517','#0F6E56','#993C1D'];
+const STAGE_META = {
+  lead:        {label:'Lead',         cls:'stage-lead',        order:1, color:'#185FA5'},
+  qualified:   {label:'Qualified',    cls:'stage-qualified',   order:2, color:'#534AB7'},
+  proposal:    {label:'Proposal',     cls:'stage-proposal',    order:3, color:'#BA7517'},
+  negotiation: {label:'Negotiation',  cls:'stage-negotiation', order:4, color:'#D85A30'},
+  won:         {label:'Won ✓',        cls:'stage-won',         order:5, color:'#1D9E75'},
+  lost:        {label:'Lost ✗',       cls:'stage-lost',        order:6, color:'#888'},
+  customer:    {label:'عميل حالي',    cls:'stage-customer',    order:5, color:'#0F6E56'},
+  inactive:    {label:'غير نشط',      cls:'stage-inactive',    order:7, color:'#aaa'},
+};
+const ACTIVITY_TYPES = {
+  call:    {label:'مكالمة',      icon:'📞', bg:'#E8F4FD', color:'#185FA5'},
+  meeting: {label:'اجتماع',     icon:'🤝', bg:'#E1F5EE', color:'#0F6E56'},
+  email:   {label:'إيميل',      icon:'📧', bg:'#EEF2FF', color:'#534AB7'},
+  visit:   {label:'زيارة ميدانية',icon:'🏢',bg:'#FEF3E2', color:'#BA7517'},
+  proposal:{label:'عرض سعر',    icon:'📋', bg:'#FEF3E2', color:'#E8A020'},
+  note:    {label:'ملاحظة',     icon:'📝', bg:'#f3f4f6', color:'#555'},
+  task:    {label:'مهمة',       icon:'✅', bg:'#E1F5EE', color:'#0F6E56'},
+};
+const INDUSTRIES = ['صناعة وتصنيع','مقاولات وعقارات','تجارة وتوزيع','خدمات مهنية','تكنولوجيا','تعليم وتدريب','رعاية صحية','طاقة وبترول','لوجستيك ونقل','أغذية وسلع'];
+const SIZES = ['صغيرة (1-50)','متوسطة (51-200)','كبيرة (201-500)','كبرى (+500)'];
+const REPS = ['أحمد حسن','سارة محمد','خالد عبدالله','محمد علي','نور إبراهيم'];
+const REP_COLORS = {'أحمد حسن':'#0F4C81','سارة محمد':'#1D9E75','خالد عبدالله':'#E8A020','محمد علي':'#534AB7','نور إبراهيم':'#D85A30'};
+ 
+let companies = [];
+let deals = [];
+let contacts = [];
+let activities = [];
+let tasks = [];
+ 
+let editingCompanyId = null;
+let viewingCompanyId = null;
+let editingDealId = null;
+let editingContactId = null;
+let activityTargetCompanyId = null;
+ 
+function uid(){ return 'id_'+Date.now()+'_'+Math.floor(Math.random()*9999); }
+ 
+function seedData(){
+  const now = new Date();
+  const d = (daysAgo) => { const dt=new Date(now); dt.setDate(dt.getDate()-daysAgo); return dt.toISOString().split('T')[0]; };
+ 
+  companies = [
+    {id:'c1',name:'شركة الفاروق للمقاولات',industry:'مقاولات وعقارات',size:'كبيرة (201-500)',stage:'customer',rep:'أحمد حسن',phone:'01001234567',email:'info@farouk.com',website:'farouk.com',address:'القاهرة — مدينة نصر',revenue:450000,notes:'عميل رئيسي منذ 2022 — يجدد سنوياً',score:92,createdAt:d(180),lastActivity:d(3),color:'#0F4C81'},
+    {id:'c2',name:'مجموعة النيل للتجارة',industry:'تجارة وتوزيع',size:'متوسطة (51-200)',stage:'negotiation',rep:'سارة محمد',phone:'01112345678',email:'sales@nile-group.com',website:'nile-group.com',address:'الجيزة — الدقي',revenue:280000,notes:'في مرحلة تفاوض على عقد سنوي',score:74,createdAt:d(90),lastActivity:d(1),color:'#1D9E75'},
+    {id:'c3',name:'الأهرام للاستيراد والتصدير',industry:'تجارة وتوزيع',size:'كبيرة (201-500)',stage:'customer',rep:'محمد علي',phone:'01234567890',email:'contact@ahram-trade.com',website:'ahram-trade.com',address:'القاهرة — وسط البلد',revenue:600000,notes:'عميل استراتيجي — نشاط موسمي قوي في Q4',score:88,createdAt:d(365),lastActivity:d(7),color:'#534AB7'},
+    {id:'c4',name:'تك سولوشنز مصر',industry:'تكنولوجيا',size:'صغيرة (1-50)',stage:'proposal',rep:'سارة محمد',phone:'01098765432',email:'ceo@techsolutions.eg',website:'techsolutions.eg',address:'القاهرة — التجمع الخامس',revenue:0,notes:'متحمس للحل لكن يقارن مع منافسين',score:61,createdAt:d(45),lastActivity:d(2),color:'#E8A020'},
+    {id:'c5',name:'شركة الدلتا للصناعات الغذائية',industry:'أغذية وسلع',size:'كبرى (+500)',stage:'qualified',rep:'أحمد حسن',phone:'01155555555',email:'procurement@delta-food.com',website:'delta-food.com',address:'المنصورة',revenue:0,notes:'قابلنا مدير المشتريات — محتاجين عرض تفصيلي',score:55,createdAt:d(30),lastActivity:d(5),color:'#D85A30'},
+    {id:'c6',name:'ميدل إيست للخدمات اللوجستية',industry:'لوجستيك ونقل',size:'كبيرة (201-500)',stage:'lead',rep:'خالد عبدالله',phone:'01277777777',email:'info@me-logistics.com',website:'me-logistics.com',address:'السادس من أكتوبر',revenue:0,notes:'Lead من معرض — محتاج تأهيل',score:38,createdAt:d(14),lastActivity:d(14),color:'#185FA5'},
+    {id:'c7',name:'أكاديمية المستقبل للتعليم',industry:'تعليم وتدريب',size:'متوسطة (51-200)',stage:'won',rep:'نور إبراهيم',phone:'01366666666',email:'admin@future-academy.edu',website:'future-academy.edu',address:'الإسكندرية',revenue:120000,notes:'أغلقنا الصفقة هذا الشهر',score:80,createdAt:d(60),lastActivity:d(0),color:'#0F6E56'},
+    {id:'c8',name:'شركة ساندستورم للطاقة',industry:'طاقة وبترول',size:'كبيرة (201-500)',stage:'lost',rep:'خالد عبدالله',phone:'01488888888',email:'bd@sandstorm-energy.com',website:'sandstorm-energy.com',address:'القاهرة — مصر الجديدة',revenue:0,notes:'خسرنا للسعر — نراجع استراتيجية التسعير',score:20,createdAt:d(120),lastActivity:d(30),color:'#993C1D'},
+  ];
+ 
+  deals = [
+    {id:'d1',title:'عقد صيانة سنوي 2025',companyId:'c1',value:180000,stage:'negotiation',rep:'أحمد حسن',probability:80,closeDate:d(-15),notes:'في انتظار توقيع العقد النهائي',createdAt:d(30)},
+    {id:'d2',title:'نظام إدارة المبيعات',companyId:'c2',value:95000,stage:'proposal',rep:'سارة محمد',probability:50,closeDate:d(-30),notes:'تم إرسال العرض — ننتظر الرد',createdAt:d(45)},
+    {id:'d3',title:'توريد معدات Q2',companyId:'c3',value:220000,stage:'won',rep:'محمد علي',probability:100,closeDate:d(7),notes:'تم الإغلاق بنجاح',createdAt:d(60)},
+    {id:'d4',title:'حل SaaS للمبيعات',companyId:'c4',value:48000,stage:'proposal',rep:'سارة محمد',probability:45,closeDate:d(-45),notes:'يقارن مع 3 منافسين',createdAt:d(20)},
+    {id:'d5',title:'عقد توريد سنوي',companyId:'c5',value:310000,stage:'qualified',rep:'أحمد حسن',probability:35,closeDate:d(-60),notes:'محتاج موافقة الإدارة العليا',createdAt:d(15)},
+    {id:'d6',title:'خدمات لوجستية متكاملة',companyId:'c6',value:75000,stage:'lead',rep:'خالد عبدالله',probability:20,closeDate:d(-90),notes:'في مرحلة الاستكشاف',createdAt:d(10)},
+    {id:'d7',title:'برامج تدريب المبيعات',companyId:'c7',value:120000,stage:'won',rep:'نور إبراهيم',probability:100,closeDate:d(0),notes:'تم توقيع العقد اليوم!',createdAt:d(25)},
+    {id:'d8',title:'تقنيات طاقة متجددة',companyId:'c8',value:0,stage:'lost',rep:'خالد عبدالله',probability:0,closeDate:d(60),notes:'خسرنا — مراجعة مطلوبة',createdAt:d(100)},
+    {id:'d9',title:'تجديد عقد 2025',companyId:'c3',value:300000,stage:'negotiation',rep:'محمد علي',probability:75,closeDate:d(-20),notes:'تجديد تلقائي مع زيادة 10%',createdAt:d(5)},
+  ];
+ 
+  contacts = [
+    {id:'ct1',name:'محمد الفاروق',title:'المدير التنفيذي',companyId:'c1',phone:'01001234568',email:'m.farouk@farouk.com',role:'decision',rep:'أحمد حسن',lastContact:d(3),notes:'يفضل التواصل عبر الواتساب'},
+    {id:'ct2',name:'هند السيد',title:'مدير المشتريات',companyId:'c1',phone:'01001234569',email:'h.sayed@farouk.com',role:'influencer',rep:'أحمد حسن',lastContact:d(5),notes:'تطلب التفاصيل التقنية'},
+    {id:'ct3',name:'أميرة نصر',title:'مدير عام',companyId:'c2',phone:'01112345679',email:'a.nasr@nile-group.com',role:'decision',rep:'سارة محمد',lastContact:d(1),notes:'صانعة القرار الرئيسية'},
+    {id:'ct4',name:'طارق الجوهري',title:'مدير تقنية المعلومات',companyId:'c3',phone:'01234567891',email:'t.gohari@ahram-trade.com',role:'champion',rep:'محمد علي',lastContact:d(7),notes:'مؤيد قوي للحل'},
+    {id:'ct5',name:'كريم زكي',title:'المؤسس والرئيس التنفيذي',companyId:'c4',phone:'01098765433',email:'karim@techsolutions.eg',role:'decision',rep:'سارة محمد',lastContact:d(2),notes:'يريد تجربة مجانية أولاً'},
+    {id:'ct6',name:'منى عبدالرحمن',title:'مدير المشتريات',companyId:'c5',phone:'01155555556',email:'m.abdrahman@delta-food.com',role:'influencer',rep:'أحمد حسن',lastContact:d(5),notes:'تحتاج موافقة مجلس الإدارة'},
+    {id:'ct7',name:'سامي اللبان',title:'مدير العمليات',companyId:'c6',phone:'01277777778',email:'s.labban@me-logistics.com',role:'user',rep:'خالد عبدالله',lastContact:d(14),notes:'التقينا في المعرض'},
+    {id:'ct8',name:'ريم الشامي',title:'مدير الموارد البشرية',companyId:'c7',phone:'01366666667',email:'r.shami@future-academy.edu',role:'champion',rep:'نور إبراهيم',lastContact:d(0),notes:'أنهت إجراءات التعاقد'},
+  ];
+ 
+  activities = [
+    {id:'a1',type:'meeting',companyId:'c1',repName:'أحمد حسن',note:'اجتماع مراجعة سنوية — تم الاتفاق على شروط التجديد',date:d(3),dealId:'d1'},
+    {id:'a2',type:'call',companyId:'c2',repName:'سارة محمد',note:'مكالمة متابعة العرض — طلبوا تعديل بنود الدفع',date:d(1),dealId:'d2'},
+    {id:'a3',type:'visit',companyId:'c5',repName:'أحمد حسن',note:'زيارة ميدانية لمصنع الدلتا — تقييم الاحتياجات',date:d(5),dealId:'d5'},
+    {id:'a4',type:'proposal',companyId:'c4',repName:'سارة محمد',note:'تم إرسال عرض السعر التفصيلي بالبريد',date:d(2),dealId:'d4'},
+    {id:'a5',type:'email',companyId:'c3',repName:'محمد علي',note:'إرسال مستندات التجديد لطارق الجوهري',date:d(7),dealId:'d9'},
+    {id:'a6',type:'note',companyId:'c8',repName:'خالد عبدالله',note:'مراجعة داخلية: الخسارة بسبب فجوة السعر 15% — نحتاج مرونة تسعير أكثر',date:d(30),dealId:'d8'},
+    {id:'a7',type:'meeting',companyId:'c7',repName:'نور إبراهيم',note:'توقيع العقد النهائي مع ريم الشامي — 120,000 جنيه',date:d(0),dealId:'d7'},
+    {id:'a8',type:'call',companyId:'c6',repName:'خالد عبدالله',note:'مكالمة تمهيدية بعد المعرض — جدولة اجتماع تفصيلي',date:d(14),dealId:'d6'},
+  ];
+ 
+  tasks = [
+    {id:'t1',title:'متابعة عرض سعر شركة النيل',companyId:'c2',repName:'سارة محمد',dueDate:d(-2),done:false,priority:'high',dealId:'d2'},
+    {id:'t2',title:'إعداد العرض التفصيلي لشركة الدلتا',companyId:'c5',repName:'أحمد حسن',dueDate:d(-1),done:false,priority:'high',dealId:'d5'},
+    {id:'t3',title:'جدولة اجتماع مع سامي اللبان (ME Logistics)',companyId:'c6',repName:'خالد عبدالله',dueDate:d(0),done:false,priority:'med',dealId:'d6'},
+    {id:'t4',title:'إرسال عقد تجديد الأهرام للتوقيع',companyId:'c3',repName:'محمد علي',dueDate:d(2),done:false,priority:'high',dealId:'d9'},
+    {id:'t5',title:'مراجعة تقرير خسارة ساندستورم',companyId:'c8',repName:'خالد عبدالله',dueDate:d(3),done:true,priority:'med',dealId:'d8'},
+    {id:'t6',title:'كول متابعة مع كريم زكي (تك سولوشنز)',companyId:'c4',repName:'سارة محمد',dueDate:d(1),done:false,priority:'med',dealId:'d4'},
+    {id:'t7',title:'إعداد عرض الفاروق للتجديد السنوي',companyId:'c1',repName:'أحمد حسن',dueDate:d(5),done:false,priority:'low',dealId:'d1'},
+  ];
+}
+ 
+/* ══════════════════════════════════════════════
+   HELPERS
+══════════════════════════════════════════════ */
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function showToast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2800); }
+function stagePill(stage){ const m=STAGE_META[stage]||{label:stage,cls:'stage-lead'}; return `<span class="stage-pill ${m.cls}">${m.label}</span>`; }
+function companyById(id){ return companies.find(c=>c.id===id); }
+function dealsByCompany(id){ return deals.filter(d=>d.companyId===id); }
+function contactsByCompany(id){ return contacts.filter(c=>c.companyId===id); }
+function activitiesByCompany(id){ return activities.filter(a=>a.companyId===id).sort((a,b)=>b.date.localeCompare(a.date)); }
+function tasksByCompany(id){ return tasks.filter(t=>t.companyId===id&&!t.done); }
+function companyLogo(c){ return `<div class="company-logo" style="background:${c.color||'#0F4C81'};">${(c.name||'?').charAt(0)}</div>`; }
+function formatDate(d){ if(!d) return '—'; const dt=new Date(d); return dt.toLocaleDateString('ar-EG',{day:'numeric',month:'short',year:'numeric'}); }
+function daysAgo(d){ if(!d) return 999; return Math.floor((new Date()-new Date(d))/86400000); }
+function daysUntil(d){ if(!d) return 999; return Math.floor((new Date(d)-new Date())/86400000); }
+function updateHeaderStats(){ document.getElementById('crm-stats-header').textContent=companies.length+' شركة · '+deals.filter(d=>!['won','lost'].includes(d.stage)).length+' صفقة نشطة'; }
+function pct(a,b){ return b?Math.min(100,Math.round(a/b*100)):0; }
+ 
+/* ══════════════════════════════════════════════
+   DASHBOARD
+══════════════════════════════════════════════ */
+function renderDashboard(){
+  const activeDeals = deals.filter(d=>!['won','lost'].includes(d.stage));
+  const wonDeals    = deals.filter(d=>d.stage==='won');
+  const pipelineVal = activeDeals.reduce((s,d)=>s+(d.value||0),0);
+  const wonVal      = wonDeals.reduce((s,d)=>s+(d.value||0),0);
+  const customers   = companies.filter(c=>c.stage==='customer'||c.stage==='won').length;
+  const openTasks   = tasks.filter(t=>!t.done).length;
+ 
+  document.getElementById('crm-kpi-grid').innerHTML = [
+    {label:'إجمالي الشركات',       val:companies.length,             sub:customers+' عميل حالي',     cc:'#0F4C81'},
+    {label:'صفقات نشطة',          val:activeDeals.length,           sub:'قيمة: '+(pipelineVal/1000).toFixed(0)+'K جنيه', cc:'#534AB7'},
+    {label:'صفقات مغلقة (Won)',    val:wonDeals.length,              sub:(wonVal/1000).toFixed(0)+'K جنيه محقق', cc:'#1D9E75'},
+    {label:'جهات اتصال',          val:contacts.length,              sub:'في '+companies.length+' شركة', cc:'#185FA5'},
+    {label:'مهام مفتوحة',         val:openTasks,                    sub:tasks.filter(t=>!t.done&&daysUntil(t.dueDate)<0).length+' متأخرة', cc:'#D85A30'},
+    {label:'أنشطة هذا الشهر',     val:activities.length,            sub:'آخر نشاط: اليوم',           cc:'#E8A020'},
+    {label:'متوسط Lead Score',     val:Math.round(companies.reduce((s,c)=>s+(c.score||0),0)/Math.max(1,companies.length))+'%', sub:'صحة البايبلاين', cc:'#BA7517'},
+    {label:'معدل الإغلاق (CRM)',   val:deals.length?Math.round(wonDeals.length/deals.length*100)+'%':'—', sub:'Closed Won من إجمالي الصفقات', cc:'#0F6E56'},
+  ].map(c=>`<div class="kpi-card" style="--cc:${c.cc};">
+    <div class="kpi-label">${c.label}</div>
+    <div class="kpi-value">${c.val}</div>
+    <div class="kpi-sub">${c.sub}</div>
+  </div>`).join('');
+ 
+  // Active deals
+  const topDeals = activeDeals.sort((a,b)=>(b.value||0)-(a.value||0)).slice(0,5);
+  document.getElementById('active-deals-badge').textContent = activeDeals.length+' صفقة';
+  document.getElementById('dash-deals-list').innerHTML = topDeals.length ? topDeals.map(d=>{
+    const co = companyById(d.companyId);
+    return `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);">
+      ${co?companyLogo(co):'<div class="company-logo" style="background:#ccc;">?</div>'}
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:12px;font-weight:700;">${esc(d.title)}</div>
+        <div style="font-size:10px;color:var(--muted);">${co?esc(co.name):''} · ${esc(d.rep)}</div>
+      </div>
+      <div style="text-align:left;">
+        <div style="font-size:12px;font-weight:800;color:var(--primary);">${(d.value/1000).toFixed(0)}K</div>
+        ${stagePill(d.stage)}
+      </div>
+    </div>`;
+  }).join('') : '<div class="no-data"><div class="no-data-icon">📋</div>لا توجد صفقات نشطة</div>';
+ 
+  // Due tasks
+  const dueTasks = tasks.filter(t=>!t.done).sort((a,b)=>a.dueDate.localeCompare(b.dueDate)).slice(0,5);
+  document.getElementById('due-tasks-badge').textContent = dueTasks.length+' مهمة';
+  document.getElementById('dash-tasks-list').innerHTML = dueTasks.map(t=>{
+    const du=daysUntil(t.dueDate);
+    const cls=du<0?'task-overdue':du===0?'task-today':'task-upcoming';
+    const lbl=du<0?`متأخرة ${Math.abs(du)} يوم`:du===0?'اليوم':'بعد '+du+' يوم';
+    const co=companyById(t.companyId);
+    return `<div class="task-row">
+      <div class="task-check ${t.done?'done':''}" onclick="toggleTask('${t.id}')">✓</div>
+      <div class="task-text ${t.done?'done-text':''}" style="font-size:12px;">
+        ${esc(t.title)}<br>
+        <span style="font-size:10px;color:var(--muted);">${co?esc(co.name):''} · ${esc(t.repName)}</span>
+      </div>
+      <span class="task-due ${cls}">${lbl}</span>
+    </div>`;
+  }).join('');
+ 
+  // Pipeline mini
+  const stages = ['lead','qualified','proposal','negotiation'];
+  document.getElementById('dash-pipeline-mini').innerHTML = stages.map(s=>{
+    const sd = deals.filter(d=>d.stage===s);
+    const val = sd.reduce((sum,d)=>sum+(d.value||0),0);
+    const meta = STAGE_META[s];
+    return `<div style="margin-bottom:10px;">
+      <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+        <span style="font-size:12px;font-weight:700;">${meta.label}</span>
+        <span style="font-size:11px;font-weight:700;color:${meta.color};">${sd.length} صفقة · ${(val/1000).toFixed(0)}K</span>
+      </div>
+      <div class="pipe-bar-bg"><div class="pipe-bar-fill" style="width:${pct(val,pipelineVal+wonVal)}%;background:${meta.color};"></div></div>
+    </div>`;
+  }).join('');
+ 
+  // Recent activities
+  const recentActs = [...activities].sort((a,b)=>b.date.localeCompare(a.date)).slice(0,5);
+  document.getElementById('dash-activities-mini').innerHTML = recentActs.map(a=>{
+    const at=ACTIVITY_TYPES[a.type]||ACTIVITY_TYPES.note;
+    const co=companyById(a.companyId);
+    return `<div style="display:flex;gap:9px;padding:7px 0;border-bottom:1px solid var(--border);align-items:flex-start;">
+      <div style="width:28px;height:28px;border-radius:50%;background:${at.bg};display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;">${at.icon}</div>
+      <div style="flex:1;">
+        <div style="font-size:11px;font-weight:700;">${co?esc(co.name):''}</div>
+        <div style="font-size:11px;color:var(--muted);">${esc(a.note.substring(0,55))}${a.note.length>55?'...':''}</div>
+      </div>
+      <div style="font-size:10px;color:var(--muted);white-space:nowrap;">${daysAgo(a.date)===0?'اليوم':daysAgo(a.date)+' يوم'}</div>
+    </div>`;
+  }).join('');
+}
+ 
+/* ══════════════════════════════════════════════
+   COMPANIES LIST
+══════════════════════════════════════════════ */
+function populateCompanyFilters(){
+  const ind = document.getElementById('company-industry-filter');
+  const rep = document.getElementById('company-rep-filter');
+  const cf  = document.getElementById('contact-company-filter');
+  const dr  = document.getElementById('deal-rep-filter');
+  const drr = document.getElementById('deal-rep-filter');
+  // Industry
+  const inds = [...new Set(companies.map(c=>c.industry))].filter(Boolean);
+  ind.innerHTML='<option value="">كل القطاعات</option>'+inds.map(i=>`<option value="${esc(i)}">${esc(i)}</option>`).join('');
+  // Rep
+  rep.innerHTML='<option value="">كل المندوبين</option>'+REPS.map(r=>`<option value="${esc(r)}">${esc(r)}</option>`).join('');
+  dr.innerHTML='<option value="">كل المندوبين</option>'+REPS.map(r=>`<option value="${esc(r)}">${esc(r)}</option>`).join('');
+  cf.innerHTML='<option value="">كل الشركات</option>'+companies.map(c=>`<option value="${esc(c.id)}">${esc(c.name)}</option>`).join('');
+}
+ 
+function renderCompaniesList(){
+  const q    = (document.getElementById('company-search')?.value||'').toLowerCase();
+  const stF  = document.getElementById('company-stage-filter')?.value||'';
+  const indF = document.getElementById('company-industry-filter')?.value||'';
+  const repF = document.getElementById('company-rep-filter')?.value||'';
+  const sort = document.getElementById('company-sort')?.value||'name';
+  let list = companies.filter(c=>{
+    if(q && !c.name.toLowerCase().includes(q) && !(c.industry||'').toLowerCase().includes(q)) return false;
+    if(stF && c.stage!==stF) return false;
+    if(indF && c.industry!==indF) return false;
+    if(repF && c.rep!==repF) return false;
+    return true;
+  });
+  if(sort==='name')   list.sort((a,b)=>a.name.localeCompare(b.name,'ar'));
+  if(sort==='value')  list.sort((a,b)=>(b.revenue||0)-(a.revenue||0));
+  if(sort==='stage')  list.sort((a,b)=>(STAGE_META[a.stage]?.order||9)-(STAGE_META[b.stage]?.order||9));
+  if(sort==='recent') list.sort((a,b)=>(b.lastActivity||'').localeCompare(a.lastActivity||''));
+  document.getElementById('companies-count-label').textContent = list.length+' شركة';
+  document.getElementById('companies-list-body').innerHTML = list.length ? list.map(c=>{
+    const cDeals = dealsByCompany(c.id);
+    const activeD = cDeals.filter(d=>!['won','lost'].includes(d.stage));
+    const totalV = cDeals.reduce((s,d)=>s+(d.value||0),0);
+    return `<div class="company-row" onclick="viewCompany('${c.id}')">
+      ${companyLogo(c)}
+      <div class="company-info">
+        <div class="company-name">${esc(c.name)}</div>
+        <div class="company-meta">${esc(c.industry||'')} · ${esc(c.size||'')} · ${esc(c.rep||'')}</div>
+      </div>
+      <div class="company-stats">
+        <div class="cstat"><div class="cstat-val">${activeD.length}</div><div class="cstat-lbl">صفقات</div></div>
+        <div class="cstat"><div class="cstat-val">${(totalV/1000).toFixed(0)}K</div><div class="cstat-lbl">قيمة</div></div>
+        <div class="cstat"><div class="cstat-val">${c.score||0}%</div><div class="cstat-lbl">Score</div></div>
+      </div>
+      <div style="margin-right:12px;">${stagePill(c.stage)}</div>
+      <div style="display:flex;gap:6px;margin-right:10px;">
+        <button onclick="event.stopPropagation();openEditCompanyModal('${c.id}')" style="background:#EEF2FF;border:none;color:var(--primary);padding:4px 10px;border-radius:6px;font-size:11px;cursor:pointer;font-family:inherit;">تعديل</button>
+      </div>
+    </div>`;
+  }).join('') : '<div class="no-data" style="padding:30px;"><div class="no-data-icon">🏢</div>لا توجد شركات مطابقة</div>';
+}
+ 
+/* ══════════════════════════════════════════════
+   COMPANY PROFILE
+══════════════════════════════════════════════ */
+function viewCompany(id){
+  viewingCompanyId = id;
+  document.getElementById('companies-list-view').style.display='none';
+  document.getElementById('company-profile-view').style.display='block';
+  renderCompanyProfile(id);
+}
+ 
+function renderCompanyProfile(id){
+  const c = companyById(id);
+  if(!c){ goBackToList(); return; }
+  const cDeals = dealsByCompany(id);
+  const cContacts = contactsByCompany(id);
+  const cActs = activitiesByCompany(id);
+  const cTasks = tasksByCompany(id);
+  const pipeVal = cDeals.filter(d=>!['won','lost'].includes(d.stage)).reduce((s,d)=>s+(d.value||0),0);
+ 
+  const el = document.getElementById('company-profile-view');
+  el.innerHTML = `
+    <button class="back-btn" onclick="goBackToList()">← العودة للقائمة</button>
+ 
+    <div class="profile-header">
+      <div class="company-logo avatar-lg" style="background:${c.color};">${c.name.charAt(0)}</div>
+      <div class="profile-body">
+        <div class="profile-name">${esc(c.name)}</div>
+        <div class="profile-subtitle">${esc(c.industry||'')} · ${esc(c.size||'')} · المسؤول: ${esc(c.rep||'')}</div>
+        <div class="profile-tags">
+          ${stagePill(c.stage)}
+          <span class="badge badge-blue">Score: ${c.score||0}%</span>
+          <span class="badge badge-gray">آخر نشاط: ${daysAgo(c.lastActivity)===0?'اليوم':daysAgo(c.lastActivity)+' يوم'}</span>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;margin-right:auto;">
+        <button class="save-btn" style="font-size:12px;padding:6px 14px;" onclick="openEditCompanyModal('${id}')">✏️ تعديل</button>
+        <button class="save-btn success" style="font-size:12px;padding:6px 14px;" onclick="openAddActivityModalFor('${id}')">+ نشاط</button>
+        <button class="save-btn accent" style="font-size:12px;padding:6px 14px;" onclick="openAddDealFor('${id}')">+ صفقة</button>
+      </div>
+    </div>
+ 
+    <div class="info-grid">
+      <div class="info-item"><div class="info-label">الهاتف</div><div class="info-value">${esc(c.phone||'—')}</div></div>
+      <div class="info-item"><div class="info-label">البريد الإلكتروني</div><div class="info-value">${esc(c.email||'—')}</div></div>
+      <div class="info-item"><div class="info-label">الموقع الإلكتروني</div><div class="info-value">${esc(c.website||'—')}</div></div>
+      <div class="info-item"><div class="info-label">العنوان</div><div class="info-value">${esc(c.address||'—')}</div></div>
+      <div class="info-item"><div class="info-label">إجمالي الإيرادات المحققة</div><div class="info-value" style="color:var(--success);">${(c.revenue||0).toLocaleString()} جنيه</div></div>
+      <div class="info-item"><div class="info-label">قيمة البايبلاين الحالية</div><div class="info-value" style="color:var(--primary);">${pipeVal.toLocaleString()} جنيه</div></div>
+    </div>
+ 
+    <!-- Lead Score -->
+    <div class="card">
+      <div class="card-title">Lead Score <span class="badge ${c.score>=80?'badge-green':c.score>=50?'badge-amber':'badge-red'}">${c.score>=80?'قوي':c.score>=50?'متوسط':'ضعيف'}</span></div>
+      <div class="score-meter">
+        <div class="score-track"><div class="score-fill" style="width:${c.score||0}%;background:${c.score>=80?'var(--success)':c.score>=50?'var(--warn)':'var(--danger)'};"></div></div>
+        <div class="score-label" style="color:${c.score>=80?'var(--success)':c.score>=50?'var(--warn)':'var(--danger)'};">${c.score||0}%</div>
+      </div>
+      ${c.notes?`<div style="margin-top:10px;font-size:12px;color:#555;background:#f8f9fc;padding:8px 12px;border-radius:7px;border-right:3px solid var(--primary);">${esc(c.notes)}</div>`:''}
+    </div>
+ 
+    <div class="equal-col">
+      <!-- Deals -->
+      <div class="card">
+        <div class="card-title">الصفقات (${cDeals.length}) <button class="save-btn" style="font-size:11px;padding:4px 10px;" onclick="openAddDealFor('${id}')">+ صفقة</button></div>
+        ${cDeals.length ? cDeals.map(d=>`
+          <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);">
+            <div style="flex:1;">
+              <div style="font-size:12px;font-weight:700;">${esc(d.title)}</div>
+              <div style="font-size:10px;color:var(--muted);">إغلاق: ${formatDate(d.closeDate)} · ${d.probability}% احتمالية</div>
+            </div>
+            <div style="text-align:left;">
+              <div style="font-size:12px;font-weight:800;color:var(--primary);">${(d.value/1000).toFixed(0)}K</div>
+              ${stagePill(d.stage)}
+            </div>
+          </div>`).join('') : '<div style="color:var(--muted);font-size:12px;padding:10px 0;">لا توجد صفقات</div>'}
+      </div>
+      <!-- Contacts -->
+      <div class="card">
+        <div class="card-title">جهات الاتصال (${cContacts.length}) <button class="save-btn" style="font-size:11px;padding:4px 10px;" onclick="openAddContactFor('${id}')">+ اتصال</button></div>
+        ${cContacts.length ? cContacts.map(ct=>`
+          <div class="contact-row">
+            <div class="avatar" style="background:${REP_COLORS[c.rep]||'#0F4C81'};">${ct.name.charAt(0)}</div>
+            <div class="contact-info">
+              <div class="contact-name">${esc(ct.name)}</div>
+              <div class="contact-title">${esc(ct.title)} · <span class="badge ${ct.role==='decision'?'badge-red':ct.role==='champion'?'badge-green':'badge-gray'}">${ct.role==='decision'?'صانع قرار':ct.role==='champion'?'Champion':ct.role==='influencer'?'مؤثر':'مستخدم'}</span></div>
+            </div>
+          </div>`).join('') : '<div style="color:var(--muted);font-size:12px;padding:10px 0;">لا توجد جهات اتصال</div>'}
+      </div>
+    </div>
+ 
+    <!-- Tasks -->
+    ${cTasks.length ? `<div class="card">
+      <div class="card-title">مهام مفتوحة (${cTasks.length})</div>
+      ${cTasks.map(t=>{
+        const du=daysUntil(t.dueDate);
+        const cls=du<0?'task-overdue':du===0?'task-today':'task-upcoming';
+        const lbl=du<0?'متأخرة':du===0?'اليوم':'بعد '+du+' يوم';
+        return `<div class="task-row">
+          <div class="task-check" onclick="toggleTask('${t.id}');renderCompanyProfile('${id}')">✓</div>
+          <div class="task-text">${esc(t.title)}</div>
+          <span class="task-due ${cls}">${lbl}</span>
+        </div>`;
+      }).join('')}
+    </div>` : ''}
+ 
+    <!-- Activity Timeline -->
+    <div class="card">
+      <div class="card-title">سجل الأنشطة (${cActs.length}) <button class="save-btn" style="font-size:11px;padding:4px 10px;" onclick="openAddActivityModalFor('${id}')">+ نشاط</button></div>
+      ${cActs.length ? cActs.map(a=>{
+        const at=ACTIVITY_TYPES[a.type]||ACTIVITY_TYPES.note;
+        return `<div class="timeline-item">
+          <div class="timeline-icon" style="background:${at.bg};">${at.icon}</div>
+          <div class="timeline-body">
+            <div class="timeline-title">${at.label} · ${esc(a.repName)}</div>
+            <div class="timeline-meta">${formatDate(a.date)}</div>
+            <div class="timeline-note">${esc(a.note)}</div>
+          </div>
+        </div>`;
+      }).join('') : '<div style="color:var(--muted);font-size:12px;">لا توجد أنشطة مسجلة</div>'}
+    </div>`;
+}
+ 
+function goBackToList(){
+  viewingCompanyId=null;
+  document.getElementById('companies-list-view').style.display='block';
+  document.getElementById('company-profile-view').style.display='none';
+}
+ 
+/* ══════════════════════════════════════════════
+   PIPELINE (KANBAN + DRAG & DROP)
+══════════════════════════════════════════════ */
+let dragDealId = null;
+ 
+function renderPipeline(){
+  const q    = (document.getElementById('deal-search')?.value||'').toLowerCase();
+  const repF = document.getElementById('deal-rep-filter')?.value||'';
+  const stages = ['lead','qualified','proposal','negotiation','won','lost'];
+ 
+  // sync rep filter options with actual team
+  const dr = document.getElementById('deal-rep-filter');
+  if(dr){
+    const cur = dr.value;
+    dr.innerHTML='<option value="">كل المندوبين</option>'+REPS.map(r=>`<option value="${esc(r)}" ${cur===r?'selected':''}>${esc(r)}</option>`).join('');
+  }
+ 
+  let filtered = deals.filter(d=>{
+    const co=companyById(d.companyId);
+    if(q&&!(d.title||'').toLowerCase().includes(q)&&!(co?.name||'').toLowerCase().includes(q)) return false;
+    if(repF&&d.rep!==repF) return false;
+    return true;
+  });
+  const totalActive = filtered.filter(d=>!['won','lost'].includes(d.stage)).reduce((s,d)=>s+(d.value||0),0);
+  document.getElementById('pipeline-total-label').textContent = 'إجمالي البايبلاين: '+(totalActive/1000).toFixed(0)+'K جنيه';
+ 
+  const wrap = document.getElementById('kanban-board-wrap');
+  wrap.innerHTML = `<div class="kanban-board" id="kanban-board">${
+    stages.map(s=>{
+      const meta=STAGE_META[s];
+      const sDeals=filtered.filter(d=>d.stage===s);
+      const sVal=sDeals.reduce((sum,d)=>sum+(d.value||0),0);
+      return `<div class="kanban-col" id="kcol-${s}"
+          ondragover="event.preventDefault();this.style.background='#e8f0fe';"
+          ondragleave="this.style.background='';"
+          ondrop="onDropDeal(event,'${s}')">
+        <div class="kanban-col-header">
+          <div>
+            <div class="kanban-col-title" style="color:${meta.color};">${meta.label}</div>
+            <div style="font-size:10px;color:var(--muted);">${(sVal/1000).toFixed(0)}K جنيه</div>
+          </div>
+          <span class="kanban-count" style="background:${meta.color};">${sDeals.length}</span>
+        </div>
+        <div class="kanban-cards-area" id="karea-${s}">
+        ${sDeals.map(d=>{
+          const co=companyById(d.companyId);
+          const du=daysUntil(d.closeDate);
+          const repColor=REP_COLORS[d.rep]||'#888';
+          return `<div class="kanban-card"
+            draggable="true"
+            id="kcard-${d.id}"
+            ondragstart="onDragStart(event,'${d.id}')"
+            ondragend="onDragEnd(event)"
+            onclick="viewCompany('${d.companyId}');showTab('companies',document.querySelectorAll('.nav-item')[1])">
+            <div class="kanban-card-title">${esc(d.title)}</div>
+            <div class="kanban-card-company">${co?esc(co.name):''}</div>
+            <div class="kanban-card-footer">
+              <span class="deal-value">${(d.value/1000).toFixed(0)}K</span>
+              <span class="deal-days" style="color:${du<0?'var(--danger)':du<7?'var(--warn)':'var(--muted)'};">${du<0?'متأخر '+Math.abs(du)+' يوم':du===0?'اليوم':du+' يوم'}</span>
+            </div>
+            <div style="margin-top:7px;display:flex;align-items:center;gap:6px;">
+              <div style="width:20px;height:20px;border-radius:50%;background:${repColor};display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:#fff;flex-shrink:0;">${(d.rep||'?').charAt(0)}</div>
+              <span style="font-size:10px;color:var(--muted);flex:1;">${esc(d.rep)}</span>
+              <span style="font-size:10px;font-weight:700;color:${meta.color};">${d.probability}%</span>
+            </div>
+          </div>`;
+        }).join('')}
+        </div>
+      </div>`;
+    }).join('')
+  }</div>`;
+}
+ 
+function onDragStart(e, dealId){
+  dragDealId = dealId;
+  e.dataTransfer.effectAllowed = 'move';
+  document.getElementById('kcard-'+dealId).style.opacity = '0.4';
+}
+function onDragEnd(e){
+  if(dragDealId) document.getElementById('kcard-'+dragDealId).style.opacity='1';
+  document.querySelectorAll('.kanban-col').forEach(c=>c.style.background='');
+}
+function onDropDeal(e, newStage){
+  e.preventDefault();
+  document.querySelectorAll('.kanban-col').forEach(c=>c.style.background='');
+  if(!dragDealId) return;
+  const deal = deals.find(d=>d.id===dragDealId);
+  if(deal && deal.stage !== newStage){
+    const oldStage = deal.stage;
+    deal.stage = newStage;
+    if(newStage==='won') deal.probability=100;
+    else if(newStage==='lost') deal.probability=0;
+    else if(newStage==='negotiation') deal.probability=Math.max(deal.probability,60);
+    else if(newStage==='proposal') deal.probability=Math.max(deal.probability,40);
+    renderPipeline();
+    renderDashboard();
+    updateHeaderStats();
+    showToast('✅ '+esc(deal.title)+' → '+STAGE_META[newStage].label);
+  }
+  dragDealId=null;
+}
+ 
+/* ══════════════════════════════════════════════
+   CONTACTS
+══════════════════════════════════════════════ */
+function renderContactsList(){
+  const q   = (document.getElementById('contact-search')?.value||'').toLowerCase();
+  const coF = document.getElementById('contact-company-filter')?.value||'';
+  const roF = document.getElementById('contact-role-filter')?.value||'';
+  let list = contacts.filter(ct=>{
+    if(q&&!ct.name.toLowerCase().includes(q)&&!(ct.title||'').toLowerCase().includes(q)) return false;
+    if(coF&&ct.companyId!==coF) return false;
+    if(roF&&ct.role!==roF) return false;
+    return true;
+  });
+  const ROLE_MAP={decision:'صانع قرار',influencer:'مؤثر',user:'مستخدم',champion:'Champion'};
+  const ROLE_CLS={decision:'badge-red',influencer:'badge-amber',user:'badge-gray',champion:'badge-green'};
+  document.getElementById('contacts-table-body').innerHTML = list.map(ct=>{
+    const co=companyById(ct.companyId);
+    return `<tr>
+      <td><div style="display:flex;align-items:center;gap:8px;">
+        <div class="avatar" style="background:${REP_COLORS[ct.rep]||'#0F4C81'};">${ct.name.charAt(0)}</div>
+        <div><div style="font-weight:700;">${esc(ct.name)}</div><div style="font-size:10px;color:var(--muted);">${esc(ct.email||'')}</div></div>
+      </div></td>
+      <td>${esc(ct.title||'—')}</td>
+      <td><span style="color:var(--primary);font-weight:700;cursor:pointer;" onclick="viewCompany('${ct.companyId}');showTab('companies',document.querySelectorAll('.nav-item')[1])">${co?esc(co.name):'—'}</span></td>
+      <td><span class="badge ${ROLE_CLS[ct.role]||'badge-gray'}">${ROLE_MAP[ct.role]||ct.role||'—'}</span></td>
+      <td>${esc(ct.rep||'—')}</td>
+      <td style="color:var(--muted);">${formatDate(ct.lastContact)}</td>
+      <td><button style="background:#EEF2FF;border:none;color:var(--primary);padding:4px 10px;border-radius:6px;font-size:11px;cursor:pointer;font-family:inherit;" onclick="openEditContactModal('${ct.id}')">تعديل</button></td>
+    </tr>`;
+  }).join('');
+}
+ 
+/* ══════════════════════════════════════════════
+   ACTIVITIES & TASKS
+══════════════════════════════════════════════ */
+function renderActivitiesTab(){
+  const openTasks = tasks.filter(t=>!t.done).sort((a,b)=>a.dueDate.localeCompare(b.dueDate));
+  document.getElementById('open-tasks-count').textContent = openTasks.length;
+  document.getElementById('tasks-list').innerHTML = openTasks.length ? openTasks.map(t=>{
+    const du=daysUntil(t.dueDate);
+    const cls=du<0?'task-overdue':du===0?'task-today':'task-upcoming';
+    const lbl=du<0?`متأخرة ${Math.abs(du)} يوم`:du===0?'اليوم':'بعد '+du+' يوم';
+    const co=companyById(t.companyId);
+    const prioCls={high:'prio-high',med:'prio-med',low:'prio-low'}[t.priority]||'prio-low';
+    return `<div class="task-row">
+      <div class="task-check ${t.done?'done':''}" onclick="toggleTask('${t.id}');renderActivitiesTab()">✓</div>
+      <div class="prio-dot ${prioCls}"></div>
+      <div class="task-text ${t.done?'done-text':''}">
+        ${esc(t.title)}<br>
+        <span style="font-size:10px;color:var(--muted);">${co?esc(co.name):''} · ${esc(t.repName)}</span>
+      </div>
+      <span class="task-due ${cls}">${lbl}</span>
+    </div>`;
+  }).join('') : '<div style="text-align:center;padding:20px;color:var(--muted);font-size:13px;">✅ لا توجد مهام مفتوحة</div>';
+ 
+  const sortedActs = [...activities].sort((a,b)=>b.date.localeCompare(a.date));
+  document.getElementById('activities-full-list').innerHTML = sortedActs.map(a=>{
+    const at=ACTIVITY_TYPES[a.type]||ACTIVITY_TYPES.note;
+    const co=companyById(a.companyId);
+    return `<div class="timeline-item">
+      <div class="timeline-icon" style="background:${at.bg};">${at.icon}</div>
+      <div class="timeline-body">
+        <div class="timeline-title">${at.label} — <span style="color:var(--primary);cursor:pointer;" onclick="viewCompany('${a.companyId}');showTab('companies',document.querySelectorAll('.nav-item')[1])">${co?esc(co.name):''}</span></div>
+        <div class="timeline-meta">${esc(a.repName)} · ${formatDate(a.date)}</div>
+        <div class="timeline-note">${esc(a.note)}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+ 
+function toggleTask(id){
+  const t=tasks.find(t=>t.id===id);
+  if(t){ t.done=!t.done; renderDashboard(); }
+}
+ 
+/* ══════════════════════════════════════════════
+   REPORTS
+══════════════════════════════════════════════ */
+function renderReports(){
+  const wonD   = deals.filter(d=>d.stage==='won');
+  const lostD  = deals.filter(d=>d.stage==='lost');
+  const activeD= deals.filter(d=>!['won','lost'].includes(d.stage));
+  const wonVal = wonD.reduce((s,d)=>s+(d.value||0),0);
+  const pipeVal= activeD.reduce((s,d)=>s+(d.value||0),0);
+  const avgDeal= wonD.length?Math.round(wonVal/wonD.length):0;
+ 
+  document.getElementById('report-kpis').innerHTML=[
+    {l:'إجمالي Won',      v:(wonVal/1000).toFixed(0)+'K ج', cc:'#1D9E75'},
+    {l:'قيمة البايبلاين', v:(pipeVal/1000).toFixed(0)+'K ج', cc:'#534AB7'},
+    {l:'Win Rate',        v:deals.length?Math.round(wonD.length/deals.length*100)+'%':'—', cc:'#0F4C81'},
+    {l:'متوسط الصفقة',    v:avgDeal.toLocaleString()+' ج',  cc:'#E8A020'},
+    {l:'Lead Score متوسط',v:Math.round(companies.reduce((s,c)=>s+(c.score||0),0)/Math.max(1,companies.length))+'%', cc:'#BA7517'},
+    {l:'Lost Deals',      v:lostD.length,                    cc:'#D85A30'},
+    {l:'جهات اتصال',      v:contacts.length,                 cc:'#185FA5'},
+    {l:'أنشطة مسجلة',     v:activities.length,               cc:'#0F6E56'},
+  ].map(c=>`<div class="kpi-card" style="--cc:${c.cc};">
+    <div class="kpi-label">${c.l}</div>
+    <div class="kpi-value">${c.v}</div>
+  </div>`).join('');
+ 
+  // By stage
+  const stagesAll = Object.keys(STAGE_META);
+  const maxCount = Math.max(...stagesAll.map(s=>companies.filter(c=>c.stage===s).length),1);
+  document.getElementById('report-by-stage').innerHTML = stagesAll.map(s=>{
+    const cnt = companies.filter(c=>c.stage===s).length;
+    const meta = STAGE_META[s];
+    return `<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+      <div style="font-size:12px;width:100px;text-align:right;flex-shrink:0;">${meta.label}</div>
+      <div style="flex:1;background:#f0f0f0;border-radius:4px;height:22px;overflow:hidden;">
+        <div style="width:${pct(cnt,maxCount)}%;background:${meta.color};height:100%;display:flex;align-items:center;padding-right:8px;">
+          ${cnt>0?`<span style="font-size:11px;font-weight:700;color:#fff;">${cnt}</span>`:''}
+        </div>
+      </div>
+      <div style="font-size:11px;font-weight:700;color:${meta.color};width:30px;text-align:left;">${cnt}</div>
+    </div>`;
+  }).join('');
+ 
+  // By rep
+  document.getElementById('report-by-rep').innerHTML = REPS.map(r=>{
+    const rDeals = deals.filter(d=>d.rep===r);
+    const rWon   = rDeals.filter(d=>d.stage==='won');
+    const rVal   = rWon.reduce((s,d)=>s+(d.value||0),0);
+    const color  = REP_COLORS[r]||'#0F4C81';
+    const maxVal = Math.max(...REPS.map(rr=>deals.filter(d=>d.rep===rr&&d.stage==='won').reduce((s,d)=>s+(d.value||0),0)),1);
+    return `<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+      <div class="avatar" style="background:${color};width:26px;height:26px;font-size:10px;">${r.charAt(0)}</div>
+      <div style="flex:1;">
+        <div style="font-size:11px;font-weight:700;margin-bottom:2px;">${r}</div>
+        <div style="background:#f0f0f0;border-radius:3px;height:6px;overflow:hidden;">
+          <div style="width:${pct(rVal,maxVal)}%;background:${color};height:100%;"></div>
+        </div>
+      </div>
+      <div style="font-size:11px;font-weight:800;color:${color};min-width:45px;text-align:left;">${(rVal/1000).toFixed(0)}K</div>
+    </div>`;
+  }).join('');
+ 
+  // By industry
+  const indMap = {};
+  deals.filter(d=>d.stage==='won').forEach(d=>{ const co=companyById(d.companyId); if(co?.industry){ indMap[co.industry]=(indMap[co.industry]||0)+(d.value||0); } });
+  document.getElementById('report-by-industry').innerHTML = Object.entries(indMap).sort((a,b)=>b[1]-a[1]).slice(0,8).map(([ind,val],i)=>`
+    <div style="background:#f8f9fc;border-radius:10px;padding:12px;text-align:center;border:1px solid var(--border);">
+      <div style="font-size:16px;font-weight:800;color:${COLORS[i%COLORS.length]};">${(val/1000).toFixed(0)}K</div>
+      <div style="font-size:10px;color:var(--muted);margin-top:3px;">${esc(ind)}</div>
+    </div>`).join('');
+ 
+  // KPI Bridge
+  document.getElementById('report-kpi-bridge').innerHTML = `
+    <div class="hint hint-blue" style="margin-bottom:12px;">
+      📌 هذه الأرقام مشتقة من CRM — <strong>أضفها يدوياً في منصة KPI</strong> لمقارنتها بالأهداف والتتبع الدوري.
+    </div>
+    <table class="data-table">
+      <thead><tr><th style="text-align:right;">المؤشر في KPI</th><th>القيمة من CRM</th><th>الوصف</th></tr></thead>
+      <tbody>
+        <tr><td>عدد الزيارات الميدانية</td><td><strong style="color:var(--primary);">${activities.filter(a=>a.type==='visit').length}</strong></td><td style="font-size:11px;color:var(--muted);">عدد أنشطة "زيارة ميدانية" المسجلة</td></tr>
+        <tr><td>عروض الأسعار المرسلة</td><td><strong style="color:var(--primary);">${activities.filter(a=>a.type==='proposal').length}</strong></td><td style="font-size:11px;color:var(--muted);">عدد أنشطة "عرض سعر" المسجلة</td></tr>
+        <tr><td>الصفقات المغلقة</td><td><strong style="color:var(--success);">${wonD.length}</strong></td><td style="font-size:11px;color:var(--muted);">عدد الصفقات بمرحلة Won</td></tr>
+        <tr><td>إجمالي الإيرادات</td><td><strong style="color:var(--success);">${wonVal.toLocaleString()} ج</strong></td><td style="font-size:11px;color:var(--muted);">مجموع قيم الصفقات المغلقة</td></tr>
+        <tr><td>عملاء جدد</td><td><strong style="color:var(--primary);">${companies.filter(c=>c.stage==='won').length}</strong></td><td style="font-size:11px;color:var(--muted);">شركات بمرحلة Won</td></tr>
+        <tr><td>معدل التحويل</td><td><strong style="color:var(--primary);">${deals.length?Math.round(wonD.length/deals.filter(d=>d.stage!=='lead').length*100)+'%':'—'}</strong></td><td style="font-size:11px;color:var(--muted);">Won / إجمالي الصفقات المتقدمة</td></tr>
+      </tbody>
+    </table>`;
+}
+ 
+/* ══════════════════════════════════════════════
+   MODALS
+══════════════════════════════════════════════ */
+function openModal(id){ document.getElementById(id).classList.remove('hidden'); }
+function closeModal(id){ document.getElementById(id).classList.add('hidden'); }
+ 
+// ── Company Modal ──
+const COMPANY_FORM_DEF = [
+  {key:'name',    label:'اسم الشركة',         type:'text', full:true},
+  {key:'industry',label:'القطاع',             type:'select', opts:INDUSTRIES},
+  {key:'size',    label:'الحجم',              type:'select', opts:SIZES},
+  {key:'stage',   label:'المرحلة',            type:'select', opts:Object.entries(STAGE_META).map(([v,m])=>({v,l:m.label}))},
+  {key:'rep',     label:'المندوب المسؤول',    type:'select', opts:REPS},
+  {key:'phone',   label:'الهاتف',             type:'text'},
+  {key:'email',   label:'البريد الإلكتروني',  type:'text'},
+  {key:'website', label:'الموقع',             type:'text'},
+  {key:'address', label:'العنوان',            type:'text', full:true},
+  {key:'revenue', label:'الإيرادات المحققة',  type:'number'},
+  {key:'score',   label:'Lead Score (0-100)', type:'number'},
+  {key:'notes',   label:'ملاحظات',            type:'textarea', full:true},
+];
+ 
+function buildForm(def, data={}){
+  return def.map(f=>{
+    const val = data[f.key]??'';
+    const fullCls = f.full?'full':'';
+    let input='';
+    if(f.type==='select'){
+      const opts = Array.isArray(f.opts) ? f.opts.map(o=>typeof o==='string'?{v:o,l:o}:o) : [];
+      input=`<select class="field-input" name="${f.key}"><option value="">اختر...</option>${opts.map(o=>`<option value="${esc(o.v)}" ${val===o.v?'selected':''}>${esc(o.l)}</option>`).join('')}</select>`;
+    } else if(f.type==='textarea'){
+      input=`<textarea class="field-input" name="${f.key}" rows="3" style="resize:vertical;">${esc(val)}</textarea>`;
+    } else {
+      input=`<input class="field-input" type="${f.type}" name="${f.key}" value="${esc(val)}" placeholder="${esc(f.label)}">`;
+    }
+    return `<div class="form-group ${fullCls}"><div class="form-label">${f.label}</div>${input}</div>`;
+  }).join('');
+}
+ 
+function readForm(formId){
+  const data={};
+  document.querySelectorAll(`#${formId} [name]`).forEach(el=>{ data[el.name]=el.type==='number'?+el.value:el.value; });
+  return data;
+}
+ 
+function openAddCompanyModal(){
+  editingCompanyId=null;
+  document.getElementById('modal-title').textContent='إضافة شركة جديدة';
+  document.getElementById('company-form').innerHTML=buildForm(COMPANY_FORM_DEF);
+  openModal('company-modal');
+}
+function openEditCompanyModal(id){
+  editingCompanyId=id;
+  const c=companyById(id);
+  document.getElementById('modal-title').textContent='تعديل: '+c.name;
+  document.getElementById('company-form').innerHTML=buildForm(COMPANY_FORM_DEF,c);
+  openModal('company-modal');
+}
+function saveCompanyForm(){
+  const data=readForm('company-form');
+  if(!data.name){showToast('❌ اسم الشركة مطلوب');return;}
+  if(editingCompanyId){
+    const c=companyById(editingCompanyId);
+    Object.assign(c,data);
+    c.lastActivity=new Date().toISOString().split('T')[0];
+  } else {
+    companies.push({id:uid(),...data,color:COLORS[companies.length%COLORS.length],createdAt:new Date().toISOString().split('T')[0],lastActivity:new Date().toISOString().split('T')[0]});
+  }
+  closeModal('company-modal');
+  populateCompanyFilters();
+  renderCompaniesList();
+  renderDashboard();
+  updateHeaderStats();
+  showToast(editingCompanyId?'✅ تم تحديث بيانات الشركة':'✅ تم إضافة الشركة بنجاح');
+  if(viewingCompanyId===editingCompanyId) renderCompanyProfile(editingCompanyId);
+}
+ 
+// ── Deal Modal ──
+function dealFormDef(){
+  return [
+    {key:'title',    label:'اسم الصفقة',         type:'text', full:true},
+    {key:'companyId',label:'الشركة',             type:'select', opts:companies.map(c=>({v:c.id,l:c.name}))},
+    {key:'value',    label:'القيمة (جنيه)',       type:'number'},
+    {key:'stage',    label:'المرحلة',            type:'select', opts:Object.entries(STAGE_META).slice(0,6).map(([v,m])=>({v,l:m.label}))},
+    {key:'probability',label:'الاحتمالية %',     type:'number'},
+    {key:'rep',      label:'المندوب',            type:'select', opts:REPS},
+    {key:'closeDate',label:'تاريخ الإغلاق المتوقع',type:'date'},
+    {key:'notes',    label:'ملاحظات',            type:'textarea', full:true},
+  ];
+}
+function openAddDealModal(){ editingDealId=null; document.getElementById('deal-modal-title').textContent='إضافة صفقة جديدة'; document.getElementById('deal-form').innerHTML=buildForm(dealFormDef()); openModal('deal-modal'); }
+function openAddDealFor(companyId){ editingDealId=null; document.getElementById('deal-modal-title').textContent='إضافة صفقة جديدة'; const def=dealFormDef(); document.getElementById('deal-form').innerHTML=buildForm(def,{companyId}); openModal('deal-modal'); }
+function saveDealForm(){
+  const data=readForm('deal-form');
+  if(!data.title){showToast('❌ اسم الصفقة مطلوب');return;}
+  if(editingDealId){ const d=deals.find(d=>d.id===editingDealId); Object.assign(d,data); }
+  else { deals.push({id:uid(),...data,createdAt:new Date().toISOString().split('T')[0]}); }
+  closeModal('deal-modal');
+  renderPipeline(); renderDashboard(); updateHeaderStats();
+  showToast('✅ تم حفظ الصفقة');
+}
+ 
+// ── Contact Modal ──
+function contactFormDef(){
+  return [
+    {key:'name',    label:'الاسم الكامل',        type:'text', full:true},
+    {key:'title',   label:'المنصب الوظيفي',      type:'text'},
+    {key:'companyId',label:'الشركة',             type:'select', opts:companies.map(c=>({v:c.id,l:c.name}))},
+    {key:'role',    label:'الدور في القرار',     type:'select', opts:[{v:'decision',l:'صانع قرار'},{v:'influencer',l:'مؤثر'},{v:'champion',l:'Champion'},{v:'user',l:'مستخدم'}]},
+    {key:'rep',     label:'المندوب المسؤول',     type:'select', opts:REPS},
+    {key:'phone',   label:'الهاتف',              type:'text'},
+    {key:'email',   label:'البريد الإلكتروني',   type:'text'},
+    {key:'notes',   label:'ملاحظات',             type:'textarea', full:true},
+  ];
+}
+function openAddContactModal(){ editingContactId=null; document.getElementById('contact-modal-title').textContent='إضافة جهة اتصال'; document.getElementById('contact-form').innerHTML=buildForm(contactFormDef()); openModal('contact-modal'); }
+function openAddContactFor(companyId){ editingContactId=null; document.getElementById('contact-modal-title').textContent='إضافة جهة اتصال'; document.getElementById('contact-form').innerHTML=buildForm(contactFormDef(),{companyId}); openModal('contact-modal'); }
+function openEditContactModal(id){ editingContactId=id; const ct=contacts.find(c=>c.id===id); document.getElementById('contact-modal-title').textContent='تعديل: '+ct.name; document.getElementById('contact-form').innerHTML=buildForm(contactFormDef(),ct); openModal('contact-modal'); }
+function saveContactForm(){
+  const data=readForm('contact-form');
+  if(!data.name){showToast('❌ الاسم مطلوب');return;}
+  data.lastContact=new Date().toISOString().split('T')[0];
+  if(editingContactId){ const ct=contacts.find(c=>c.id===editingContactId); Object.assign(ct,data); }
+  else { contacts.push({id:uid(),...data}); }
+  closeModal('contact-modal');
+  renderContactsList(); renderDashboard();
+  showToast('✅ تم حفظ جهة الاتصال');
+  if(viewingCompanyId) renderCompanyProfile(viewingCompanyId);
+}
+ 
+// ── Activity Modal ──
+function activityFormDef(companyId=''){
+  return [
+    {key:'type',      label:'نوع النشاط',   type:'select', opts:Object.entries(ACTIVITY_TYPES).map(([v,m])=>({v,l:m.icon+' '+m.label}))},
+    {key:'companyId', label:'الشركة',        type:'select', opts:companies.map(c=>({v:c.id,l:c.name}))},
+    {key:'repName',   label:'المندوب',       type:'select', opts:REPS},
+    {key:'date',      label:'التاريخ',       type:'date'},
+    {key:'note',      label:'الملاحظات',     type:'textarea', full:true},
+  ];
+}
+function openAddActivityModal(){ document.getElementById('activity-form').innerHTML=buildForm(activityFormDef(),{date:new Date().toISOString().split('T')[0]}); openModal('activity-modal'); }
+function openAddActivityModalFor(companyId){ document.getElementById('activity-form').innerHTML=buildForm(activityFormDef(),{companyId,date:new Date().toISOString().split('T')[0]}); openModal('activity-modal'); }
+function saveActivityForm(){
+  const data=readForm('activity-form');
+  if(!data.note){showToast('❌ الملاحظة مطلوبة');return;}
+  activities.push({id:uid(),...data});
+  // update lastActivity on company
+  const co=companyById(data.companyId);
+  if(co) co.lastActivity=data.date||new Date().toISOString().split('T')[0];
+  closeModal('activity-modal');
+  renderDashboard();
+  showToast('✅ تم تسجيل النشاط');
+  if(viewingCompanyId===data.companyId) renderCompanyProfile(viewingCompanyId);
+  if(document.getElementById('tab-activities').classList.contains('active')) renderActivitiesTab();
+}
+ 
+// ── Task Modal (inline) ──
+function openAddTaskModal(){
+  const title=prompt('عنوان المهمة:'); if(!title) return;
+  const companyId=prompt('ID الشركة (اتركه فارغاً للعام):');
+  tasks.push({id:uid(),title,companyId:companyId||'',repName:REPS[0],dueDate:new Date().toISOString().split('T')[0],done:false,priority:'med'});
+  renderActivitiesTab(); renderDashboard();
+  showToast('✅ تم إضافة المهمة');
+}
+ 
+/* ══════════════════════════════════════════════
+   NAV
+══════════════════════════════════════════════ */
+function showTab(tab, el){
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+  if(el) el.classList.add('active');
+  if(tab==='companies'){   populateCompanyFilters(); renderCompaniesList(); }
+  if(tab==='pipeline'){    populateCompanyFilters(); renderPipeline(); }
+  if(tab==='contacts'){    populateCompanyFilters(); renderContactsList(); }
+  if(tab==='activities'){  renderActivitiesTab(); }
+  if(tab==='reports'){     renderReports(); }
+}
+ 
+/* ══════════════════════════════════════════════
+   INIT
+══════════════════════════════════════════════ */
+seedData();
+renderDashboard();
+updateHeaderStats();
+</script>
+</body>
+</html>
+ 
