@@ -958,6 +958,9 @@ function renderPipeline(){
             id="kcard-${d.id}"
             ondragstart="onDragStart(event,'${d.id}')"
             ondragend="onDragEnd(event)"
+            ontouchstart="onTouchStart(event,'${d.id}')"
+            ontouchmove="onTouchMove(event)"
+            ontouchend="onTouchEnd(event)"
             onclick="viewCompany('${d.companyId}');showTab('companies',document.querySelectorAll('.nav-item')[1])">
             <div class="kanban-card-title">${esc(d.title)}</div>
             <div class="kanban-card-company">${co?esc(co.name):''}</div>
@@ -984,16 +987,19 @@ function onDragStart(e, dealId){
   document.getElementById('kcard-'+dealId).style.opacity = '0.4';
 }
 function onDragEnd(e){
-  if(dragDealId) document.getElementById('kcard-'+dragDealId).style.opacity='1';
+  if(dragDealId) { const el=document.getElementById('kcard-'+dragDealId); if(el) el.style.opacity='1'; }
   document.querySelectorAll('.kanban-col').forEach(c=>c.style.background='');
 }
 function onDropDeal(e, newStage){
   e.preventDefault();
   document.querySelectorAll('.kanban-col').forEach(c=>c.style.background='');
   if(!dragDealId) return;
-  const deal = deals.find(d=>d.id===dragDealId);
+  moveDealToStage(dragDealId, newStage);
+  dragDealId=null;
+}
+function moveDealToStage(dealId, newStage){
+  const deal = deals.find(d=>d.id===dealId);
   if(deal && deal.stage !== newStage){
-    const oldStage = deal.stage;
     deal.stage = newStage;
     if(newStage==='won') deal.probability=100;
     else if(newStage==='lost') deal.probability=0;
@@ -1004,7 +1010,47 @@ function onDropDeal(e, newStage){
     updateHeaderStats();
     showToast('✅ '+esc(deal.title)+' → '+STAGE_META[newStage].label);
   }
-  dragDealId=null;
+}
+ 
+/* ── TOUCH DRAG (mobile/tablet) ── */
+let touchDealId=null, touchClone=null, touchLastCol=null;
+ 
+function onTouchStart(e, dealId){
+  touchDealId = dealId;
+  const card = document.getElementById('kcard-'+dealId);
+  const rect = card.getBoundingClientRect();
+  // create floating clone
+  touchClone = card.cloneNode(true);
+  touchClone.style.cssText=`position:fixed;z-index:9999;width:${rect.width}px;opacity:0.85;pointer-events:none;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.2);top:${rect.top}px;right:${rect.right-window.innerWidth+rect.width}px;`;
+  document.body.appendChild(touchClone);
+  card.style.opacity='0.3';
+}
+ 
+function onTouchMove(e){
+  if(!touchDealId||!touchClone) return;
+  e.preventDefault();
+  const t = e.touches[0];
+  const w = touchClone.offsetWidth;
+  touchClone.style.top  = (t.clientY - 40)+'px';
+  touchClone.style.right= (window.innerWidth - t.clientX - w/2)+'px';
+  // highlight column under finger
+  touchClone.style.display='none';
+  const el = document.elementFromPoint(t.clientX, t.clientY);
+  touchClone.style.display='';
+  const col = el ? el.closest('.kanban-col') : null;
+  document.querySelectorAll('.kanban-col').forEach(c=>c.style.background='');
+  if(col){ col.style.background='#e8f0fe'; touchLastCol=col.id.replace('kcol-',''); }
+  else touchLastCol=null;
+}
+ 
+function onTouchEnd(e){
+  if(!touchDealId) return;
+  if(touchClone){ touchClone.remove(); touchClone=null; }
+  const card = document.getElementById('kcard-'+touchDealId);
+  if(card) card.style.opacity='1';
+  document.querySelectorAll('.kanban-col').forEach(c=>c.style.background='');
+  if(touchLastCol) moveDealToStage(touchDealId, touchLastCol);
+  touchDealId=null; touchLastCol=null;
 }
  
 /* ══════════════════════════════════════════════
